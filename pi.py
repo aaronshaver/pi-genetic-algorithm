@@ -24,8 +24,8 @@ class Config():
         self.sleep_seconds = 1
         self.max_population = 50
         self.initial_population = 10
-        self.max_distance_from_pi = 314159
-        self.mutation_percentage = 0.02
+        self.max_distance_from_pi = 2.4
+        self.mutation_percentage = 0.05
 
     def __str__(self):
         return 'World configuration: ' + str(self.__dict__) + '\n'
@@ -50,7 +50,8 @@ if __name__ == "__main__":
     generation = 0
     while generation < config.max_generations:
         time.sleep(config.sleep_seconds)
-        print("doing stuff")
         generation += 1
+        print("{0} generations elapsed; world population: {1}".
+            format(generation, len(world.animals)))
 
 
