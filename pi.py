@@ -4,14 +4,14 @@ import random
 import math
 import time
 
+MAX_INT = 2147483647
 
 class Animal():
     def __init__(self, numerator=None, denominator=None):
-        self.max_int = 2147483647
         self.numerator = numerator if(numerator) else random.randint(
-            1, self.max_int)
+            1, MAX_INT)
         self.denominator = denominator if(denominator) else random.randint(
-            1, self.max_int)
+            1, MAX_INT)
         self.age = 0
         self.fitness = abs(math.pi - self.get_pi())  # distance from pi
 
@@ -22,7 +22,7 @@ class Animal():
 class Config():
     def __init__(self):
         self.max_age = 100
-        self.max_generations = 30 
+        self.max_generations = 30
         self.sleep_seconds = 0
         self.max_population = 50
         self.initial_population = 10
@@ -65,9 +65,11 @@ class World():
         return Animal(num, den)
 
 def print_world_status(generation, world):
-    print('{0} generations elapsed; world population: {1}'.
+    print('* {0} generations elapsed; world population: {1}'.
         format(generation, len(world.animals)))
-    print('Fittest animal: ' + str(world.animals[0].__dict__))
+    fittest = world.animals[0]
+    print('* Fittest animal: ' + str(fittest.__dict__))
+    print('* Pi approximation: ' + str(fittest.get_pi()))
     print('')
 
 if __name__ == '__main__':
