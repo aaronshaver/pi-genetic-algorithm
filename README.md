@@ -1,3 +1,5 @@
+![DNA logo](http://i.imgur.com/v1xhLns.gif "DNA logo")
+
 # pi-genetic-algorithm
 
 Integer division approximation of pi using a genetic simulation in Python
