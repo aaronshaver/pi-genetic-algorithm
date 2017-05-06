@@ -1,4 +1,4 @@
-![DNA logo](http://i.imgur.com/v1xhLns.gif "DNA logo")
+![DNA logo](http://i.imgur.com/lv6FDia.jpg "DNA logo")
 
 # pi-genetic-algorithm
 
