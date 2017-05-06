@@ -6,6 +6,9 @@ from decimal import *
 
 MAX_INT = 2147483647
 PI = Decimal(3.141592653589793)
+# Note: I couldn't get the precision any better than 15 digits past
+# the decimal point. I think it's a fundamental limitation of floating
+# point math: https://docs.python.org/3.1/tutorial/floatingpoint.html
 
 def string_groups(string):
     return " ".join([string[i:i+3] for i in range(0, len(string), 3)])
@@ -22,6 +25,8 @@ def fitness(pi_approx):
 
 class Animal():
     def __init__(self, numerator=None, denominator=None):
+        """ Generates a random animal if no numerator and denominator
+        are specified (as during reproduction) """
         self.numerator = numerator if(numerator) else random.randint(
             1, MAX_INT)
         self.denominator = denominator if(denominator) else random.randint(
@@ -56,26 +61,36 @@ class World():
         self.sort_animals()
 
     def fill_world(self, population):
+        """ The initial adding of animals to a fresh world """
         while len(self.animals) < population:
             animal = Animal()
             self.animals.append(animal)
 
     def sort_animals(self):
+        """ The animals who most closely approximate pi end up at the
+        front of the world's animals list """
         self.animals.sort(key=lambda x: x.fitness)
 
     def get_parents(self, l):
+        """ Gives us pairs of parents for making children """
         for i in range(0, len(l), 2):
             to_yield = l[i:i + 2]
             if len(to_yield) % 2 == 0:
                 yield to_yield
 
     def reproduce_animals(self, mutation):
+        """ Adds new animals to the world by producing one new child
+        from pairs of existing animals; ignores odd ones out """
         parent_pairs = list(self.get_parents(self.animals))
         for pair in parent_pairs:
             child = self.new_child(pair[0], pair[1], mutation)
             self.animals.append(child)
+        self.sort_animals()
 
     def new_child(self, father, mother, mutation):
+        """ Appends a new animal to the world using a mix of two other
+        animals' "genes", and then mutates the result to simulate, e.g.
+        environmental radiation or DNA errors as in the real world """
         num = (father.numerator + mother.numerator) / 2
         den = (father.denominator + mother.denominator) / 2
 
@@ -96,15 +111,20 @@ class World():
         self.animals = remaining_animals
 
     def age_animals(self):
+        """ Increase the age of every animal so that we can later kill
+        off old animals """
         for animal in self.animals:
             animal.age += 1
 
     def kill_weak_animals(self, max_dist):
+        """ Animals not meeting the fitness threshold of being close enough
+        to pi will die """
         remaining_animals = [i for i in self.animals
                              if i.fitness < max_dist]
         self.animals = remaining_animals
 
     def kill_overcrowded(self, max_pop):
+        """ Kills off the weakest animals when overcrowding occurs """
         if len(self.animals) > max_pop:
             list_slice_endpoint = round(len(self.animals) // 2)
             self.animals = self.animals[:list_slice_endpoint]
@@ -136,7 +156,6 @@ if __name__ == '__main__':
         world.kill_old_animals(config.max_age)
         world.kill_weak_animals(config.max_distance_from_pi)
         world.reproduce_animals(config.mutation_percentage)
-        world.sort_animals()
         world.kill_overcrowded(config.max_population)
         generation += 1
         world.age_animals()
