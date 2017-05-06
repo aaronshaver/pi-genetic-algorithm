@@ -7,6 +7,12 @@ from decimal import *
 MAX_INT = 2147483647
 PI = Decimal(3.141592653589793)
 
+def string_groups(string):
+    return " ".join([string[i:i+3] for i in range(0, len(string), 3)])
+
+UNGROUPED_PI = '{0:.15f}'.format(PI)
+FORMATTED_PI = string_groups(UNGROUPED_PI)
+
 def fitness(pi_approx):
     """ Gets the absolute distance between animal's approximation of pi
     and actual value of pi """
@@ -96,10 +102,12 @@ def print_world_status(generation, world):
     if len(world.animals) > 0:
         fittest = world.animals[0]
         print('* Fittest animal: ' + str(fittest.__dict__))
-        print('* {0:.15f} (this animal\'s pi)'.format(fittest.get_pi()))
+        fittest_pi = '{0:.15f}'.format(fittest.get_pi())
+        grouped_fittest_pi = string_groups(fittest_pi)
+        print('* {0} (this animal\'s pi)'.format(grouped_fittest_pi))
     else:
         print('Sorry, no animals are alive')
-    print('* {0:.15f} (actual pi)'.format(Decimal(PI)))
+    print('* {0} (actual pi)'.format(FORMATTED_PI))
     print('')
 
 if __name__ == '__main__':
