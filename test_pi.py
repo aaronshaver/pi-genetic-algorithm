@@ -31,4 +31,11 @@ class TestPi(unittest.TestCase):
         world = pi.World(config)
         self.assertEqual(len(world.animals), config.initial_population)
 
+    def test_fittest_member_sorting(self):
+        config = pi.Config()
+        world = pi.World(config)
+        world.animals[-1].fitness = 0  # make last animal maximally fit
+        world.sort_animals()
+        self.assertEqual(world.animals[0].fitness, 0)
+
 

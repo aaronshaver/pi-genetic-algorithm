@@ -41,8 +41,10 @@ class World():
             animal = Animal()
             self.animals.append(animal)
 
+    def sort_animals(self):
+        self.animals.sort(key=lambda x: x.fitness)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     config = Config()
     print(config)
     world = World(config)
@@ -50,8 +52,10 @@ if __name__ == "__main__":
     generation = 0
     while generation < config.max_generations:
         time.sleep(config.sleep_seconds)
+        world.sort_animals()
         generation += 1
-        print("{0} generations elapsed; world population: {1}".
+        print('{0} generations elapsed; world population: {1}'.
             format(generation, len(world.animals)))
-
+        print('Fittest animal: ' + str(world.animals[0].__dict__))
+        print('')
 
