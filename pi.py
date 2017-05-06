@@ -1,15 +1,17 @@
 #!/usr/bin/python3
 
 import random
-import math
 import time
+from decimal import *
 
 MAX_INT = 2147483647
+PI = Decimal(3.141592653589793)
 
 def fitness(pi_approx):
     """ Gets the absolute distance between animal's approximation of pi
     and actual value of pi """
-    return abs(math.pi - pi_approx)  # distance from pi
+    return abs(Decimal(PI) -
+               Decimal(pi_approx))  # distance from pi (to 30 digits)
 
 
 class Animal():
@@ -22,7 +24,7 @@ class Animal():
         self.fitness = fitness(self.get_pi())
 
     def get_pi(self):
-        return self.numerator / (self.denominator * 1.0)
+        return Decimal(self.numerator) / Decimal(self.denominator)
 
 
 class Config():
@@ -30,9 +32,9 @@ class Config():
         self.max_age = 5
         self.max_generations = 100
         self.sleep_seconds = 0  # to control screen output speed if needed
-        self.max_population = 1000000  # for killing off by overcrowding
+        self.max_population = 100000  # for killing off by overcrowding
         self.initial_population = 100
-        self.max_distance_from_pi = 1.4  # for killing 'weak' animals
+        self.max_distance_from_pi = 1  # for killing 'weak' animals
         self.mutation_percentage = 0.05
 
     def __str__(self):
@@ -83,6 +85,10 @@ class World():
                              if i.fitness < max_dist]
         self.animals = remaining_animals
 
+    def kill_overcrowded(self, max_pop):
+        if len(self.animals) > max_pop:
+            self.animals = self.animals[:len(self.animals)/2] 
+
 
 def print_world_status(generation, world):
     print('* {0} generations elapsed; world population: {1}'.
@@ -90,9 +96,10 @@ def print_world_status(generation, world):
     if len(world.animals) > 0:
         fittest = world.animals[0]
         print('* Fittest animal: ' + str(fittest.__dict__))
-        print('* pi approximation: ' + str(fittest.get_pi()))
+        print('* {0:.15f} (this animal\'s pi)'.format(fittest.get_pi()))
     else:
-        print('Sorry, no animals are alive') 
+        print('Sorry, no animals are alive')
+    print('* {0:.15f} (actual pi)'.format(Decimal(PI)))
     print('')
 
 if __name__ == '__main__':
@@ -109,6 +116,7 @@ if __name__ == '__main__':
         world.kill_weak_animals(config.max_distance_from_pi)
         world.reproduce_animals()
         world.sort_animals()
+        world.kill_overcrowded(config.max_population)
         generation += 1
         world.age_animals()
         print_world_status(generation, world)
