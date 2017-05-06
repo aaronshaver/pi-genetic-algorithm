@@ -11,9 +11,9 @@ Gets integer division approximation of Pi using a genetic framework
 
 ## Usage
 
-While this program will work in Python 2.7.x, it runs faster and yields better
-results in Python 3.x 
+Install Python 3.x, then:
 
-`python pi.py`
+`python pi.py` (or `python3 pi.py` on Ubuntu)
 
-To set your own initial conditions for the world, edit the Config class.
+To set your own initial conditions for the world, edit the member variables of
+the Config class.

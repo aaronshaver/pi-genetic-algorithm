@@ -36,9 +36,9 @@ class Animal():
 class Config():
     def __init__(self):
         self.max_age = 5
-        self.max_generations = 50
-        self.max_population = 5000  # for killing off by overcrowding
-        self.initial_population = 100
+        self.max_generations = 100
+        self.max_population = 10000  # for killing off by overcrowding
+        self.initial_population = 300 
         self.max_distance_from_pi = 1  # for killing 'weak' animals
         self.mutation_percentage = 0.05
 
@@ -73,8 +73,8 @@ class World():
             self.animals.append(child)
 
     def new_child(self, father, mother):
-        num = (father.numerator + mother.numerator) / 2
-        den = (father.denominator + mother.denominator) / 2
+        num = round((father.numerator + mother.numerator) / 2)
+        den = round((father.denominator + mother.denominator) / 2)
         return Animal(num, den)
 
     def kill_old_animals(self, age):
