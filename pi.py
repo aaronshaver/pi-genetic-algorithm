@@ -36,9 +36,8 @@ class Animal():
 class Config():
     def __init__(self):
         self.max_age = 5
-        self.max_generations = 100
-        self.sleep_seconds = 0  # to control screen output speed if needed
-        self.max_population = 100000  # for killing off by overcrowding
+        self.max_generations = 50
+        self.max_population = 5000  # for killing off by overcrowding
         self.initial_population = 100
         self.max_distance_from_pi = 1  # for killing 'weak' animals
         self.mutation_percentage = 0.05
@@ -93,7 +92,7 @@ class World():
 
     def kill_overcrowded(self, max_pop):
         if len(self.animals) > max_pop:
-            self.animals = self.animals[:len(self.animals)/2] 
+            self.animals = self.animals[:round(len(self.animals)/2)]
 
 
 def print_world_status(generation, world):
@@ -119,7 +118,6 @@ if __name__ == '__main__':
     print_world_status(generation, world)
 
     while generation < config.max_generations:
-        time.sleep(config.sleep_seconds)
         world.kill_old_animals(config.max_age)
         world.kill_weak_animals(config.max_distance_from_pi)
         world.reproduce_animals()
