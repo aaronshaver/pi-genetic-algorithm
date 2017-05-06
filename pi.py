@@ -35,12 +35,15 @@ class Animal():
 
 class Config():
     def __init__(self):
+        """ Sets the initial conditions for the world.
+            It's fun to see how changing different parameters affects the
+            accuracy of the pi approximation """
         self.max_age = 5
         self.max_generations = 100
         self.max_population = 10000  # for killing off by overcrowding
-        self.initial_population = 300 
+        self.initial_population = 300
         self.max_distance_from_pi = 1  # for killing 'weak' animals
-        self.mutation_percentage = 0.05
+        self.mutation_percentage = 0.000001
 
     def __str__(self):
         return 'World configuration: ' + str(self.__dict__) + '\n'
@@ -66,16 +69,27 @@ class World():
             if len(to_yield) % 2 == 0:
                 yield to_yield
 
-    def reproduce_animals(self):
+    def reproduce_animals(self, mutation):
         parent_pairs = list(self.get_parents(self.animals))
         for pair in parent_pairs:
-            child = self.new_child(pair[0], pair[1])
+            child = self.new_child(pair[0], pair[1], mutation)
             self.animals.append(child)
 
-    def new_child(self, father, mother):
-        num = round((father.numerator + mother.numerator) / 2)
-        den = round((father.denominator + mother.denominator) / 2)
-        return Animal(num, den)
+    def new_child(self, father, mother, mutation):
+        num = (father.numerator + mother.numerator) / 2
+        den = (father.denominator + mother.denominator) / 2
+
+        if random.randint(0, 1):  # flip a coin to add or subtract
+            num = num * (1 + mutation)
+        else:
+            num = num * (1 - mutation)
+
+        if random.randint(0, 1):
+            den = den * (1 + mutation)
+        else:
+            den = den * (1 - mutation)
+
+        return Animal(round(num), round(den))
 
     def kill_old_animals(self, age):
         remaining_animals = [i for i in self.animals if i.age < age]
@@ -92,7 +106,8 @@ class World():
 
     def kill_overcrowded(self, max_pop):
         if len(self.animals) > max_pop:
-            self.animals = self.animals[:round(len(self.animals)/2)]
+            list_slice_endpoint = round(len(self.animals) // 2)
+            self.animals = self.animals[:list_slice_endpoint]
 
 
 def print_world_status(generation, world):
@@ -120,7 +135,7 @@ if __name__ == '__main__':
     while generation < config.max_generations:
         world.kill_old_animals(config.max_age)
         world.kill_weak_animals(config.max_distance_from_pi)
-        world.reproduce_animals()
+        world.reproduce_animals(config.mutation_percentage)
         world.sort_animals()
         world.kill_overcrowded(config.max_population)
         generation += 1
