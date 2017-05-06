@@ -6,6 +6,12 @@ import time
 
 MAX_INT = 2147483647
 
+def fitness(pi_approx):
+    """ Gets the absolute distance between animal's approximation of pi
+    and actual value of pi """
+    return abs(math.pi - pi_approx)  # distance from pi
+
+
 class Animal():
     def __init__(self, numerator=None, denominator=None):
         self.numerator = numerator if(numerator) else random.randint(
@@ -13,7 +19,7 @@ class Animal():
         self.denominator = denominator if(denominator) else random.randint(
             1, MAX_INT)
         self.age = 0
-        self.fitness = abs(math.pi - self.get_pi())  # distance from pi
+        self.fitness = fitness(self.get_pi())
 
     def get_pi(self):
         return self.numerator / (self.denominator * 1.0)
@@ -21,12 +27,12 @@ class Animal():
 
 class Config():
     def __init__(self):
-        self.max_age = 100
-        self.max_generations = 30
-        self.sleep_seconds = 0
-        self.max_population = 50
-        self.initial_population = 10
-        self.max_distance_from_pi = 2.4
+        self.max_age = 5
+        self.max_generations = 100
+        self.sleep_seconds = 0  # to control screen output speed if needed
+        self.max_population = 1000000  # for killing off by overcrowding
+        self.initial_population = 100
+        self.max_distance_from_pi = 1.4  # for killing 'weak' animals
         self.mutation_percentage = 0.05
 
     def __str__(self):
@@ -64,12 +70,29 @@ class World():
         den = (father.denominator + mother.denominator) / 2
         return Animal(num, den)
 
+    def kill_old_animals(self, age):
+        remaining_animals = [i for i in self.animals if i.age < age]
+        self.animals = remaining_animals
+
+    def age_animals(self):
+        for animal in self.animals:
+            animal.age += 1
+
+    def kill_weak_animals(self, max_dist):
+        remaining_animals = [i for i in self.animals
+                             if i.fitness < max_dist]
+        self.animals = remaining_animals
+
+
 def print_world_status(generation, world):
     print('* {0} generations elapsed; world population: {1}'.
         format(generation, len(world.animals)))
-    fittest = world.animals[0]
-    print('* Fittest animal: ' + str(fittest.__dict__))
-    print('* Pi approximation: ' + str(fittest.get_pi()))
+    if len(world.animals) > 0:
+        fittest = world.animals[0]
+        print('* Fittest animal: ' + str(fittest.__dict__))
+        print('* pi approximation: ' + str(fittest.get_pi()))
+    else:
+        print('Sorry, no animals are alive') 
     print('')
 
 if __name__ == '__main__':
@@ -82,9 +105,11 @@ if __name__ == '__main__':
 
     while generation < config.max_generations:
         time.sleep(config.sleep_seconds)
+        world.kill_old_animals(config.max_age)
+        world.kill_weak_animals(config.max_distance_from_pi)
         world.reproduce_animals()
         world.sort_animals()
         generation += 1
+        world.age_animals()
         print_world_status(generation, world)
-
 
