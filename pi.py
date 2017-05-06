@@ -44,6 +44,16 @@ class World():
     def sort_animals(self):
         self.animals.sort(key=lambda x: x.fitness)
 
+    def get_parents(self, l):
+        for i in range(0, len(l), 2):
+            to_yield = l[i:i + 2]
+            if len(to_yield) % 2 == 0:
+                yield to_yield
+
+    def reproduce_animals(self):
+        parent_pairs = list(self.get_parents(self.animals))
+
+
 if __name__ == '__main__':
     config = Config()
     print(config)
@@ -52,8 +62,10 @@ if __name__ == '__main__':
     generation = 0
     while generation < config.max_generations:
         time.sleep(config.sleep_seconds)
+        world.reproduce_animals()
         world.sort_animals()
         generation += 1
+
         print('{0} generations elapsed; world population: {1}'.
             format(generation, len(world.animals)))
         print('Fittest animal: ' + str(world.animals[0].__dict__))

@@ -38,4 +38,11 @@ class TestPi(unittest.TestCase):
         world.sort_animals()
         self.assertEqual(world.animals[0].fitness, 0)
 
+    def test_get_parents_even_pairs(self):
+        config = pi.Config()
+        config.initial_population = 11
+        world = pi.World(config)
+        self.assertTrue(len(list(
+            world.get_parents(world.animals))[-1]) % 2 == 0,
+            "Length of last parent pair wasn't even but should have been")
 
