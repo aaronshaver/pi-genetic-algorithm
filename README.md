@@ -1,5 +1,6 @@
 # pi-genetic-algorithm
-Gets integer division approximation of Pi using a genetic framework
+
+Integer division approximation of pi using a genetic simulation in Python
 
 ## Example output
 
