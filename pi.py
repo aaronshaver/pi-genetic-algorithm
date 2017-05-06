@@ -8,8 +8,10 @@ import time
 class Animal():
     def __init__(self, numerator=None, denominator=None):
         self.max_int = 2147483647
-        self.numerator = random.randint(1, self.max_int)
-        self.denominator = random.randint(1, self.max_int)
+        self.numerator = numerator if(numerator) else random.randint(
+            1, self.max_int)
+        self.denominator = denominator if(denominator) else random.randint(
+            1, self.max_int)
         self.age = 0
         self.fitness = abs(math.pi - self.get_pi())  # distance from pi
 
@@ -20,8 +22,8 @@ class Animal():
 class Config():
     def __init__(self):
         self.max_age = 100
-        self.max_generations = 4
-        self.sleep_seconds = 1
+        self.max_generations = 30 
+        self.sleep_seconds = 0
         self.max_population = 50
         self.initial_population = 10
         self.max_distance_from_pi = 2.4
@@ -35,6 +37,7 @@ class World():
     def __init__(self, config):
         self.animals = []
         self.fill_world(config.initial_population)
+        self.sort_animals()
 
     def fill_world(self, population):
         while len(self.animals) < population:
@@ -52,7 +55,20 @@ class World():
 
     def reproduce_animals(self):
         parent_pairs = list(self.get_parents(self.animals))
+        for pair in parent_pairs:
+            child = self.new_child(pair[0], pair[1])
+            self.animals.append(child)
 
+    def new_child(self, father, mother):
+        num = (father.numerator + mother.numerator) / 2
+        den = (father.denominator + mother.denominator) / 2
+        return Animal(num, den)
+
+def print_world_status(generation, world):
+    print('{0} generations elapsed; world population: {1}'.
+        format(generation, len(world.animals)))
+    print('Fittest animal: ' + str(world.animals[0].__dict__))
+    print('')
 
 if __name__ == '__main__':
     config = Config()
@@ -60,14 +76,13 @@ if __name__ == '__main__':
     world = World(config)
 
     generation = 0
+    print_world_status(generation, world)
+
     while generation < config.max_generations:
         time.sleep(config.sleep_seconds)
         world.reproduce_animals()
         world.sort_animals()
         generation += 1
+        print_world_status(generation, world)
 
-        print('{0} generations elapsed; world population: {1}'.
-            format(generation, len(world.animals)))
-        print('Fittest animal: ' + str(world.animals[0].__dict__))
-        print('')
 

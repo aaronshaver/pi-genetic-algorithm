@@ -46,3 +46,14 @@ class TestPi(unittest.TestCase):
             world.get_parents(world.animals))[-1]) % 2 == 0,
             "Length of last parent pair wasn't even but should have been")
 
+    def test_new_child(self):
+        config = pi.Config()
+        world = pi.World(config)
+        world.animals[0].numerator = 4
+        world.animals[0].denominator = 4
+        world.animals[1].numerator = 2
+        world.animals[1].denominator = 2
+        child = world.new_child(world.animals[0], world.animals[1])
+        self.assertEqual(child.numerator, 3)
+        self.assertEqual(child.denominator, 3)
+
